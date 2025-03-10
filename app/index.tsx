@@ -7,7 +7,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Leitor de QR Code</Text>
-      <Button title="Escanear QR Code" onPress={() => router.push("/scanner")} />
+      <Button title="Escanear QR Code" onPress={() => router.push("/nota?numero=3478598215&valor=217,83&data=2025-03-02")} />
     </View>
   );
 }
