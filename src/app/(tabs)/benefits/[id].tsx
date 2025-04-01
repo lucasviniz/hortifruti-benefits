@@ -1,14 +1,17 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { SafeAreaView, View, Text, Image, TouchableOpacity, Alert } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { IconAppleFilled } from '@tabler/icons-react-native';
 import { usePoints } from '@/contexts/points-context';
+import { useFeedbackScreen } from '@/hooks/feedback-screen';
 
 export default function BenefitDetail() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { redeemPoints } = usePoints();
+  const [isLoading, setIsLoading] = useState(false);
+  const { showSuccess, showError } = useFeedbackScreen();
 
   // Dados mockados — no futuro pode vir de um serviço ou contexto
   const benefit = {
@@ -19,11 +22,29 @@ export default function BenefitDetail() {
     Icon: IconAppleFilled,
   };
 
-  const handleRedeem = () => {
-    redeemPoints(benefit.points);
-    Alert.alert('Benefício resgatado!', `Você resgatou: ${benefit.title}`);
-    router.back();
-  };
+  const handleRedeem = async () => {
+      try {
+        setIsLoading(true);
+    
+        // Aqui poderia vir validação com backend
+        redeemPoints(benefit.points);
+    
+        showSuccess({
+          title: 'Benefício resgatado!',
+          message: `Você resgatou: ${benefit.title}`,
+          redirect: '/dashboard',
+        });
+      } catch (error) {
+        showError({
+          title: 'Erro ao resgatar',
+          message: 'Tente novamente mais tarde.',
+          redirect: '/dashboard',
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>

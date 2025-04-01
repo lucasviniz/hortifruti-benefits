@@ -3,19 +3,40 @@ import { SafeAreaView, View, Text, TextInput, TouchableOpacity, Alert } from 're
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { styles } from './styles';
+import { useFeedbackScreen } from '@/hooks/feedback-screen';
 
 export default function RegisterReceiptScreen() {
   const router = useRouter();
   const [receipt, setReceipt] = useState('');
   const [feedback, setFeedback] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = () => {
+  const { showSuccess, showError } = useFeedbackScreen();
+
+  const handleSubmit = async () => {
     if (!receipt.trim()) {
       return Alert.alert('Campo obrigatório', 'Digite o número do comprovante.');
     }
 
-    Alert.alert('Sucesso!', 'Comprovante registrado com sucesso.');
-    router.back();
+    try {
+      setIsLoading(true);
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      showSuccess({
+        title: 'Comprovante registrado',
+        message: 'Seus pontos foram adicionados com sucesso.',
+        redirect: '/dashboard',
+      });
+    } catch (error) {
+      showError({
+        title: 'Erro ao registrar',
+        message: 'Tente novamente mais tarde.',
+        redirect: '/dashboard',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

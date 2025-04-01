@@ -15,8 +15,8 @@ export default function Dashboard() {
                 <DashboardHeader />
                 <PointsCard />
                 <View style={{ flexDirection: 'row', paddingHorizontal: 24, marginBottom: 32 }}>
-                    <QuickActionButton icon={IconQrcode} label="Registrar recibo" onPress={() => router.push('/scanner/register')}/>
-                    <QuickActionButton icon={IconReceipt} label="Scanear QR Code" onPress={() => router.push("/nota?numero=3478598215&valor=217,83&data=2025-03-02")} />
+                    <QuickActionButton icon={IconQrcode} label="Registrar recibo" onPress={() => router.push('/receipt/register')}/>
+                    <QuickActionButton icon={IconReceipt} label="Scanear QR Code" onPress={() => router.push("/receipt/scanner")} />
                 </View>
 
                 <View style={{ marginBottom: 16, paddingHorizontal: 24 }}>

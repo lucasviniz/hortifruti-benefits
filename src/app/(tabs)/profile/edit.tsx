@@ -3,14 +3,45 @@ import { SafeAreaView, View, Text, TextInput, TouchableOpacity } from 'react-nat
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { styles } from './styles';
+import { Button } from '@/components/button';
+import { IconUserCheck } from '@tabler/icons-react-native';
+import { useFeedbackScreen } from '@/hooks/feedback-screen';
 
 export default function EditProfileScreen() {
+  const { showSuccess, showError } = useFeedbackScreen();
   const [name, setName] = useState('João da Feira');
   const [email, setEmail] = useState('cliente@hortifrut.com');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSave = () => {
-    // Aqui você salvaria no backend ou contexto
-    router.back();
+  const handleSave = async () => {
+    if (!name || !email) {
+      return showError({
+        title: 'Campos obrigatórios',
+        message: 'Preencha nome e email.',
+        redirect: '/profile'
+      });
+    }
+
+    try {
+      setIsLoading(true);
+
+      // Simulação de envio
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      showSuccess({
+        title: 'Perfil atualizado',
+        message: 'Suas informações foram salvas com sucesso.',
+        redirect: '/profile'
+      });
+    } catch (error) {
+      showError({
+        title: 'Erro ao salvar',
+        message: 'Tente novamente mais tarde.',
+        redirect: '/profile'
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -37,10 +68,10 @@ export default function EditProfileScreen() {
           />
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleSave}>
-          <Feather name="save" size={20} color="#FFFFFF" />
-          <Text style={styles.buttonText}>Salvar</Text>
-        </TouchableOpacity>
+        <Button isLoading={isLoading} onPress={handleSave}>
+          <Button.Icon icon={IconUserCheck} />
+          <Button.Title>Salvar</Button.Title>
+        </Button>
       </View>
     </SafeAreaView>
   );

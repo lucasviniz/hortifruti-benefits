@@ -11,6 +11,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { colors } from "@/styles/theme";
 import { Loading } from "@/components/loading";
 import { PointsProvider } from "@/contexts/points-context";
+import { ErrorBoundary } from "@/components/error/error-boundary";
 
 
 export default function RootLayout() {
@@ -27,14 +28,16 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-          <PointsProvider>
-            <Stack
-                screenOptions={{
-                    headerShown: false,
-                    contentStyle: { backgroundColor: colors.gray[100] }
-                }}
-            />
-          </PointsProvider>
+          <ErrorBoundary>
+            <PointsProvider>
+              <Stack
+                  screenOptions={{
+                      headerShown: false,
+                      contentStyle: { backgroundColor: colors.gray[100] }
+                  }}
+              />
+            </PointsProvider>
+          </ErrorBoundary>
         </GestureHandlerRootView>
   )
 }
