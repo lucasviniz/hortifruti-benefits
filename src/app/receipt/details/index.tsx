@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView, View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { styles } from './styles';
@@ -9,10 +9,17 @@ import { Button } from '@/components/button';
 import { IconCheck } from '@tabler/icons-react-native';
 
 export default function ReceiptDetailsScreen() {
-  const { receipt, amount, date } = useLocalSearchParams();
   const { showSuccess, showError } = useFeedbackScreen();
   const [isLoading, setIsLoading] = useState(false);
-
+  const params = useLocalSearchParams();
+  const receipt = params.receipt as string;
+  const feedback = params.feedback as string;
+  const [isFetching, setIsFetching] = useState(false);
+  const initialAmount = params.amount as string | undefined;
+  const initialDate = params.date as string | undefined;
+  const [amount, setAmount] = useState('');
+  const [date, setDate] = useState('');
+  
   const [opinion, setOpinion] = useState('');
   
 
@@ -37,6 +44,51 @@ export default function ReceiptDetailsScreen() {
       setIsLoading(false);
     }
   };
+
+  const fetchReceiptData = async (code: string) => {
+    try {
+      const response = await fetch(`https://suaapi.com/receipt/${code}`);
+      const data = await response.json();
+  
+      setAmount(String(data.amount));
+      setDate(data.date);
+    } catch (error) {
+      showError({
+        title: 'Erro ao carregar nota',
+        message: 'Verifique se o número está correto ou tente novamente.',
+        redirect: '/receipt/register',
+      });
+    }
+  };
+
+
+  useEffect(() => {
+    if (!initialAmount || !initialDate) {
+      setIsFetching(true);
+  
+      // Simula requisição com atraso
+      setTimeout(() => {
+        // Simulação de dados vindos da “API”
+        const mockedData = {
+          amount: '48.00',
+          date: '2025-04-01',
+        };
+  
+        setAmount(mockedData.amount);
+        setDate(mockedData.date);
+        setIsFetching(false);
+      }, 1000);
+    }
+  }, []);
+
+  if (isFetching) {
+    return (
+      <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Loading />
+      </SafeAreaView>
+    );
+  }
+  
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF', padding: 24 }}>
@@ -64,7 +116,7 @@ export default function ReceiptDetailsScreen() {
         multiline
         numberOfLines={4}
         style={styles.input}
-        value={opinion}
+        value={feedback ?? opinion}
         onChangeText={setOpinion}
       />
 

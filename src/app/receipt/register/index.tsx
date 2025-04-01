@@ -4,6 +4,8 @@ import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { styles } from './styles';
 import { useFeedbackScreen } from '@/hooks/feedback-screen';
+import { Button } from '@/components/button';
+import { IconSend } from '@tabler/icons-react-native';
 
 export default function RegisterReceiptScreen() {
   const router = useRouter();
@@ -22,11 +24,20 @@ export default function RegisterReceiptScreen() {
       setIsLoading(true);
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      showSuccess({
-        title: 'Comprovante registrado',
-        message: 'Seus pontos foram adicionados com sucesso.',
-        redirect: '/dashboard',
+      if(feedback.trim()){
+        return router.push({
+          pathname: '/receipt/details',
+          params: {
+            receipt, // apenas o número da nota
+            feedback
+          },
+        });
+      }
+      router.push({
+        pathname: '/receipt/details',
+        params: {
+          receipt, // apenas o número da nota
+        },
       });
     } catch (error) {
       showError({
@@ -69,9 +80,14 @@ export default function RegisterReceiptScreen() {
           multiline
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        <Button isLoading={isLoading} onPress={handleSubmit}>
+          <Button.Icon icon={IconSend} />
+          <Button.Title>Enviar recibo</Button.Title>
+        </Button>
+
+        {/* <TouchableOpacity style={styles.button} onPress={handleSubmit}>
           <Text style={styles.buttonText}>Enviar recibo</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </SafeAreaView>
   );
