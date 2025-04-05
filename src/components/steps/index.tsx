@@ -20,7 +20,7 @@ export function Steps(){
             <Step
                 icon={IconGift}
                 title="Aproveite ofertas exclusivas"
-                description="Tenha acesso a descontos e promoções especiais em produtos selecionados especialmente para você."
+                description="Tenha acesso a descontos e promoções especiais em produtos"
             />
         </View>
     )

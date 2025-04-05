@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     padding: spacing.lg,
     justifyContent: 'center',
-    gap: spacing.md,
+    gap: spacing.sm,
   },
   title: {
     fontSize: 22,

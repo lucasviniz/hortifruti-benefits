@@ -6,7 +6,7 @@ export const s = StyleSheet.create({
         height: "100%",
         justifyContent: "center",
         alignItems: "center",
-        padding: 40
+        padding: 20
     },
     title: {
         fontSize: 30,
