@@ -12,13 +12,13 @@ export const s = StyleSheet.create({
         fontSize: 30,
         fontFamily: fontFamily.semiBold,
         color: colors.gray[600],
-        marginBottom: 14
+        marginBottom: 5
     },
     subtitle:{
         fontSize: 14,
         fontFamily: fontFamily.regular,
         color: colors.gray[500],
-        marginBottom: 14
+        marginBottom: 30
     },
     containerSocialLogin: {
         flexDirection: "row",

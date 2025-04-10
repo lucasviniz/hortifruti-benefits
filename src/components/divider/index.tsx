@@ -8,9 +8,9 @@ type DividerWithTextProps = {
 
 const DividerWithText: React.FC<DividerWithTextProps> = ({ text = 'Ou continue com' }) => {
   return (
-    <View style={styles.container}>
+    <View style={styles.dividerContainer}>
       <View style={styles.line} />
-      <Text style={styles.text}>{text}</Text>
+      <Text style={styles.dividerText}>{text}</Text>
       <View style={styles.line} />
     </View>
   );

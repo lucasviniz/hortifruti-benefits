@@ -1,20 +1,23 @@
+import { colors, fontFamily } from '@/styles/theme';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  container: {
+  dividerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 24,
+    marginVertical: 16,
   },
+
+  dividerText: {
+    marginHorizontal: 8,
+    fontSize: 12,
+    color: colors.gray[400],
+    fontFamily: fontFamily.medium,
+  },
+
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: '#E5E7EB', // cinza claro (tailwind gray-200)
-  },
-  text: {
-    marginHorizontal: 12,
-    fontSize: 14,
-    color: '#6B7280', // gray-500
-    fontWeight: '500',
+    backgroundColor: colors.gray[300],
   },
 });

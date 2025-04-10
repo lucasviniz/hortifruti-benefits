@@ -7,6 +7,7 @@ import { router } from "expo-router";
 import SocialButton from "../button/social-button";
 import { useFeedbackScreen } from "@/hooks/feedback-screen";
 import { useState } from "react";
+import { IconLock, IconMail } from "@tabler/icons-react-native";
 
 export function LoginForm() {
 
@@ -45,16 +46,18 @@ export function LoginForm() {
 
     return (
         <View style={s.container}>
-            <Text style={s.title}>Login</Text>
-            <Text style={s.subtitle}>Bem vindo de volta ao James Hortifrut</Text>
+            <Text style={s.title}>Bem vindo</Text>
+            <Text style={s.subtitle}>Faça login na sua conta</Text>
 
             <Input
+                icon={IconMail}
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
             />
 
             <Input
+                icon={IconLock}
                 placeholder="Senha"
                 value={password}
                 onChangeText={setPassword}
@@ -68,17 +71,7 @@ export function LoginForm() {
                 </Button>
             </View>
 
-            <View style={{ marginTop: 24, alignItems: 'center' }}>
-                <Text style={{ fontSize: 14, color: '#6B7280' }}>
-                    Não tem uma conta?{' '}
-                    <Text
-                    style={{ color: '#10B981', fontWeight: '600' }}
-                    onPress={() => router.push('/register')}
-                    >
-                    Cadastre-se
-                    </Text>
-                </Text>
-            </View>
+            
 
             <DividerWithText />
 
@@ -93,6 +86,19 @@ export function LoginForm() {
                     style={{ flex: 1 }}
                     onPress={() => console.log('Facebook')}
                 />
+            </View>
+
+
+            <View style={{ marginTop: 24, alignItems: 'center' }}>
+                <Text style={{ fontSize: 14, color: '#6B7280' }}>
+                    Ainda não tem uma conta?{' '}
+                    <Text
+                    style={{ color: '#10B981', fontWeight: '600' }}
+                    onPress={() => router.push('/register')}
+                    >
+                    Cadastre-se
+                    </Text>
+                </Text>
             </View>
 
         </View>
