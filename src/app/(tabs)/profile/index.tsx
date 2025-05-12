@@ -33,9 +33,9 @@ const handleLogout = () => {
 
 const options = [
   { icon: IconUser, label: 'Editar perfil', onPress: () => router.push('/profile/edit') },
-  { icon: IconLock, label: 'Alterar senha', onPress: () => {} },
-  { icon: IconBell, label: 'Notificações', onPress: () => {} },
-  { icon: IconHeadphones, label: 'Suporte', onPress: () => {} },
+  { icon: IconLock, label: 'Alterar senha', onPress: () => router.push('/profile/password') },
+  { icon: IconBell, label: 'Notificações', onPress: () => router.push('/profile/notifications') },
+  { icon: IconHeadphones, label: 'Suporte', onPress: () => router.push('/profile/support') },
   { icon: IconLogout, label: 'Sair', onPress: handleLogout },
 ];
 

@@ -29,4 +29,17 @@ export const styles = StyleSheet.create({
         fontWeight: '600',
         fontSize: 16,
       },
+      title: {
+        fontSize: 22,
+        fontWeight: '700',
+        color: '#1F2937',
+        fontFamily: 'Rubik_700Bold',
+      },
+      
+      subtitle: {
+        fontSize: 14,
+        color: '#6B7280',
+        marginTop: 4,
+        fontFamily: 'Rubik_400Regular',
+      },
 })

@@ -1,38 +1,42 @@
 import React, { useState } from 'react';
-import { SafeAreaView, View, Text, TextInput, Linking, TouchableOpacity } from 'react-native';
+import { SafeAreaView, View, Text, TouchableOpacity, Linking } from 'react-native';
 import { router } from 'expo-router';
+import { useForm, Controller } from 'react-hook-form';
 
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import SocialButton from '@/components/button/social-button';
-import { IconUser, IconMail, IconLock, IconPhone } from '@tabler/icons-react-native';
-import { useFeedbackScreen } from '@/hooks/feedback-screen';
-import { styles } from './styles';
 import DividerWithText from '@/components/divider';
+import { IconUser, IconMail, IconLock } from '@tabler/icons-react-native';
+import { useFeedbackScreen } from '@/hooks/feedback-screen';
+import styleRegister from './styles';
+
+type FormData = {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
 
 export default function RegisterScreen() {
   const { showSuccess, showError } = useFeedbackScreen();
-
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleRegister = async () => {
-    if (!name || !email || !password || !confirmPassword || !termsAccepted) {
-      return showError({
-        title: 'Campos obrigatórios',
-        message: 'Preencha tudo e aceite os termos para continuar.',
-        redirect: '/register',
-      });
-    }
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<FormData>();
 
-    if (password !== confirmPassword) {
+  const passwordValue = watch('password');
+
+  const onSubmit = async (data: FormData) => {
+    if (!termsAccepted) {
       return showError({
-        title: 'Senhas diferentes',
-        message: 'As senhas não coincidem.',
+        title: 'Termos obrigatórios',
+        message: 'Você precisa aceitar os termos para continuar.',
         redirect: '/register',
       });
     }
@@ -57,55 +61,122 @@ export default function RegisterScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Create Account</Text>
-        <Text style={styles.subtitle}>Join Hortifruti Benefits today</Text>
+    <SafeAreaView style={styleRegister.container}>
+      <View style={styleRegister.content}>
+        <Text style={styleRegister.title}>Create Account</Text>
+        <Text style={styleRegister.subtitle}>Join Hortifruti Benefits today</Text>
 
         <View>
-          <Input placeholder="Full Name" value={name} onChangeText={setName} icon={IconUser} />
-          <Input placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" icon={IconMail} />
-          <Input placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry icon={IconLock} />
-          <Input placeholder="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry icon={IconLock} />
+          <Controller
+            control={control}
+            name="name"
+            rules={{ required: 'Nome é obrigatório', minLength: { value: 3, message: 'Mínimo de 3 caracteres' } }}
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Full Name"
+                value={value}
+                onChangeText={onChange}
+                icon={IconUser}
+                errorMessage={errors.name?.message}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="email"
+            rules={{
+              required: 'Email é obrigatório',
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: 'Email inválido',
+              },
+            }}
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Email"
+                value={value}
+                onChangeText={onChange}
+                keyboardType="email-address"
+                icon={IconMail}
+                errorMessage={errors.email?.message}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="password"
+            rules={{ required: 'Senha é obrigatória', minLength: { value: 6, message: 'Mínimo de 6 caracteres' } }}
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Password"
+                value={value}
+                onChangeText={onChange}
+                secureTextEntry
+                icon={IconLock}
+                errorMessage={errors.password?.message}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="confirmPassword"
+            rules={{
+              required: 'Confirme sua senha',
+              validate: value => value === passwordValue || 'As senhas não coincidem',
+            }}
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Confirm Password"
+                value={value}
+                onChangeText={onChange}
+                secureTextEntry
+                icon={IconLock}
+                errorMessage={errors.confirmPassword?.message}
+              />
+            )}
+          />
         </View>
 
-        <View style={styles.checkboxContainer}>
-            <TouchableOpacity
-              style={styles.checkboxWrapper}
-              onPress={() => setTermsAccepted(!termsAccepted)}
-              activeOpacity={0.8}
-            >
-              <View style={[styles.checkbox, termsAccepted && styles.checkboxChecked]}>
-                {termsAccepted && <Text style={styles.checkmark}>✓</Text>}
-              </View>
+        <View style={styleRegister.checkboxContainer}>
+          <TouchableOpacity
+            style={styleRegister.checkboxWrapper}
+            onPress={() => setTermsAccepted(!termsAccepted)}
+            activeOpacity={0.8}
+          >
+            <View style={[styleRegister.checkbox, termsAccepted && styleRegister.checkboxChecked]}>
+              {termsAccepted && <Text style={styleRegister.checkmark}>✓</Text>}
+            </View>
 
-              <Text style={styles.termsText}>
-                I agree to the{' '}
-                <Text style={styles.link} onPress={() => Linking.openURL('https://example.com/terms')}>
-                  Terms of Service
-                </Text>{' '}
-                and{' '}
-                <Text style={styles.link} onPress={() => Linking.openURL('https://example.com/privacy')}>
-                  Privacy Policy
-                </Text>
+            <Text style={styleRegister.termsText}>
+              I agree to the{' '}
+              <Text style={styleRegister.link} onPress={() => Linking.openURL('https://example.com/terms')}>
+                Terms of Service
+              </Text>{' '}
+              and{' '}
+              <Text style={styleRegister.link} onPress={() => Linking.openURL('https://example.com/privacy')}>
+                Privacy Policy
               </Text>
-            </TouchableOpacity>
+            </Text>
+          </TouchableOpacity>
         </View>
 
-        <Button isLoading={isLoading} onPress={handleRegister}>
+        <Button isLoading={isLoading} onPress={handleSubmit(onSubmit)}>
           <Button.Title>Create Account</Button.Title>
         </Button>
 
         <DividerWithText text="Ou registre-se com" />
 
-        <View style={styles.socialButtons}>
+        <View style={styleRegister.socialButtons}>
           <SocialButton iconSource={require('@/assets/google.png')} style={{ flex: 1 }} onPress={() => console.log('Google')} />
           <SocialButton iconSource={require('@/assets/facebook.png')} style={{ flex: 1 }} onPress={() => console.log('Facebook')} />
         </View>
 
-        <Text style={styles.loginText}>
+        <Text style={styleRegister.loginText}>
           Already have an account?{' '}
-          <Text style={styles.link} onPress={() => router.push('/login')}>
+          <Text style={styleRegister.link} onPress={() => router.push('/login')}>
             Sign in
           </Text>
         </Text>

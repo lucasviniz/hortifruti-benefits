@@ -1,43 +1,42 @@
 import React, { useState } from 'react';
-import { SafeAreaView, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { SafeAreaView, View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { styles } from './styles';
 import { useFeedbackScreen } from '@/hooks/feedback-screen';
 import { Button } from '@/components/button';
 import { IconSend } from '@tabler/icons-react-native';
+import { useForm, Controller } from 'react-hook-form';
+
+type FormData = {
+  receipt: string;
+  feedback: string;
+};
 
 export default function RegisterReceiptScreen() {
   const router = useRouter();
-  const [receipt, setReceipt] = useState('');
-  const [feedback, setFeedback] = useState('');
+  const { showError } = useFeedbackScreen();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { showSuccess, showError } = useFeedbackScreen();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm<FormData>();
 
-  const handleSubmit = async () => {
-    if (!receipt.trim()) {
-      return Alert.alert('Campo obrigatório', 'Digite o número do comprovante.');
-    }
+  const feedback = watch('feedback');
 
+  const onSubmit = async ({ receipt, feedback }: FormData) => {
     try {
       setIsLoading(true);
-
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      if(feedback.trim()){
-        return router.push({
-          pathname: '/receipt/details',
-          params: {
-            receipt, // apenas o número da nota
-            feedback
-          },
-        });
-      }
+
       router.push({
         pathname: '/receipt/details',
-        params: {
-          receipt, // apenas o número da nota
-        },
+        params: feedback?.trim()
+          ? { receipt, feedback }
+          : { receipt },
       });
     } catch (error) {
       showError({
@@ -61,33 +60,50 @@ export default function RegisterReceiptScreen() {
 
       <View style={{ paddingHorizontal: 24 }}>
         <Text style={styles.label}>Número do recibo</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Insira o número do recibo"
-          placeholderTextColor="#9CA3AF"
-          value={receipt}
-          onChangeText={setReceipt}
-          keyboardType="numeric"
+        <Controller
+          control={control}
+          name="receipt"
+          rules={{ required: 'Este campo é obrigatório' }}
+          render={({ field: { onChange, value } }) => (
+            <>
+              <TextInput
+                style={[styles.input, errors.receipt && { borderColor: '#EF4444', borderWidth: 1 }]}
+                placeholder="Insira o número do recibo"
+                placeholderTextColor="#9CA3AF"
+                value={value}
+                onChangeText={onChange}
+                keyboardType="numeric"
+              />
+              {errors.receipt && (
+                <Text style={{ color: '#EF4444', marginTop: 4, fontSize: 12 }}>
+                  {errors.receipt.message}
+                </Text>
+              )}
+            </>
+          )}
         />
 
         <Text style={[styles.label, { marginTop: 24 }]}>Seu feedback (opcional)</Text>
-        <TextInput
-          style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
-          placeholder="Como foi sua experiência de compra?"
-          placeholderTextColor="#9CA3AF"
-          value={feedback}
-          onChangeText={setFeedback}
-          multiline
+        <Controller
+          control={control}
+          name="feedback"
+          defaultValue=""
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              placeholder="Como foi sua experiência de compra?"
+              placeholderTextColor="#9CA3AF"
+              value={value}
+              onChangeText={onChange}
+              multiline
+            />
+          )}
         />
 
-        <Button isLoading={isLoading} onPress={handleSubmit}>
+        <Button isLoading={isLoading} onPress={handleSubmit(onSubmit)}>
           <Button.Icon icon={IconSend} />
           <Button.Title>Enviar recibo</Button.Title>
         </Button>
-
-        {/* <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Enviar recibo</Text>
-        </TouchableOpacity> */}
       </View>
     </SafeAreaView>
   );

@@ -34,6 +34,9 @@ export default function TabsLayout() {
       <Tabs.Screen name="profile/index" options={{ title: 'Perfil' }} />
       <Tabs.Screen name="benefits/[id]"options={{ href: null,}} />
       <Tabs.Screen name="profile/edit"options={{ href: null,}} />
+      <Tabs.Screen name="profile/password"options={{ href: null,}} />
+      <Tabs.Screen name="profile/notifications"options={{ href: null,}} />
+      <Tabs.Screen name="profile/support"options={{ href: null,}} />
     </Tabs>
   );
 }

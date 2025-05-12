@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { colors, fontFamily } from '@/styles/theme';
 
-export const styles = StyleSheet.create({
+const styleRegister = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.gray[100],
@@ -107,3 +107,5 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
   },  
 });
+
+export default styleRegister
