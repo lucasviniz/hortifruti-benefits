@@ -42,5 +42,9 @@ export const styles = StyleSheet.create({
     marginLeft: 4,
     fontFamily: 'Rubik_400Regular',
   },
+  toggleButton: {
+    marginLeft: 8,
+  },
+  
   
 });

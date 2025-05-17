@@ -7,6 +7,8 @@ import { useFeedbackScreen } from '@/hooks/feedback-screen';
 import { Loading } from '@/components/loading';
 import { Button } from '@/components/button';
 import { IconCheck } from '@tabler/icons-react-native';
+import { usePoints } from '@/contexts/points-context';
+import { useHistory } from '@/contexts/history-context';
 
 export default function ReceiptDetailsScreen() {
   const { showSuccess, showError } = useFeedbackScreen();
@@ -21,16 +23,28 @@ export default function ReceiptDetailsScreen() {
   const [date, setDate] = useState('');
   
   const [opinion, setOpinion] = useState('');
-  
+  const { addPoints } = usePoints();
+  const { addHistory } = useHistory();
+
 
   const handleConfirm = async () => {
     setIsLoading(true);
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-  
+
+      const POINTS_REWARD = 250;
+
+      addPoints(POINTS_REWARD);
+      addHistory({
+        title: 'Recibo Registrado',
+        points: POINTS_REWARD,
+        icon: 'file-text',
+        type: 'credit',
+      });
+
       showSuccess({
         title: 'Recibo registrado',
-        message: 'Seus pontos foram adicionados com sucesso.',
+        message: `Você ganhou ${POINTS_REWARD} pontos.`,
         redirect: '/dashboard',
       });
     } catch (error) {
@@ -66,9 +80,7 @@ export default function ReceiptDetailsScreen() {
     if (!initialAmount || !initialDate) {
       setIsFetching(true);
   
-      // Simula requisição com atraso
       setTimeout(() => {
-        // Simulação de dados vindos da “API”
         const mockedData = {
           amount: '48.00',
           date: '2025-04-01',

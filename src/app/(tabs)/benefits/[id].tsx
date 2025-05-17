@@ -1,50 +1,69 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
-import { SafeAreaView, View, Text, Image, TouchableOpacity, Alert } from 'react-native';
+import { SafeAreaView, View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { IconAppleFilled } from '@tabler/icons-react-native';
 import { usePoints } from '@/contexts/points-context';
 import { useFeedbackScreen } from '@/hooks/feedback-screen';
+import { benefits } from '@/data/benefits';
+import { useBenefits } from '@/contexts/benefits-context';
+import { useHistory } from '@/contexts/history-context';
 
 export default function BenefitDetail() {
   const { id } = useLocalSearchParams();
-  const router = useRouter();
-  const { redeemPoints } = usePoints();
-  const [isLoading, setIsLoading] = useState(false);
+  const { points, redeemPoints } = usePoints();
   const { showSuccess, showError } = useFeedbackScreen();
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Dados mockados — no futuro pode vir de um serviço ou contexto
-  const benefit = {
-    id,
-    title: '10% Off Fresh Fruits',
-    description: 'Use este benefício para obter 10% de desconto em qualquer fruta fresca da loja.',
-    points: 500,
-    Icon: IconAppleFilled,
-  };
+  const benefit = benefits.find((b) => b.id === id);
+  const { redeemBenefitById } = useBenefits();
+  const { addHistory } = useHistory();
+
+
+  if (!benefit) {
+    return (
+      <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Benefício não encontrado.</Text>
+      </SafeAreaView>
+    );
+  }
 
   const handleRedeem = async () => {
-      try {
-        setIsLoading(true);
-    
-        // Aqui poderia vir validação com backend
-        redeemPoints(benefit.points);
-    
-        showSuccess({
-          title: 'Benefício resgatado!',
-          message: `Você resgatou: ${benefit.title}`,
-          redirect: '/dashboard',
-        });
-      } catch (error) {
-        showError({
-          title: 'Erro ao resgatar',
-          message: 'Tente novamente mais tarde.',
-          redirect: '/dashboard',
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    if (points < benefit.points) {
+      return showError({
+        title: 'Pontos insuficientes',
+        message: `Você precisa de ${benefit.points} pontos para resgatar esse benefício.`,
+        redirect: '/dashboard',
+      });
+    }
   
+    try {
+      setIsLoading(true);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+  
+      redeemPoints(benefit.points);
+      redeemBenefitById(benefit.id); // <- Remover da lista
+      addHistory({
+        title: benefit.title,
+        points: benefit.points,
+        icon: 'gift',
+        type: 'debit',
+      });
+      
+      showSuccess({
+        title: 'Benefício resgatado!',
+        message: `Você usou ${benefit.points} pontos.`,
+        redirect: '/dashboard',
+      });
+    } catch (error) {
+      showError({
+        title: 'Erro ao resgatar',
+        message: 'Tente novamente mais tarde.',
+        redirect: '/dashboard',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
@@ -61,8 +80,8 @@ export default function BenefitDetail() {
               marginBottom: 24,
             }}
           >
-                <benefit.Icon size={48} color="#059669" />
-            </View>
+            <benefit.icon size={48} color="#059669" />
+          </View>
 
           <Text style={{ fontSize: 20, fontWeight: '700', textAlign: 'center', marginBottom: 12 }}>
             {benefit.title}
@@ -79,7 +98,7 @@ export default function BenefitDetail() {
 
         <TouchableOpacity
           onPress={handleRedeem}
-          activeOpacity={0.8}
+          disabled={isLoading}
           style={{
             backgroundColor: '#10B981',
             paddingVertical: 16,
@@ -88,10 +107,17 @@ export default function BenefitDetail() {
             flexDirection: 'row',
             justifyContent: 'center',
             gap: 12,
+            opacity: isLoading ? 0.6 : 1,
           }}
         >
-          <Feather name="check-circle" size={20} color="#FFFFFF" />
-          <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 16 }}>Resgatar benefício</Text>
+          {isLoading ? (
+            <Text style={{ color: '#FFF', fontWeight: '600', fontSize: 16 }}>Processando...</Text>
+          ) : (
+            <>
+              <Feather name="check-circle" size={20} color="#FFFFFF" />
+              <Text style={{ color: '#FFFFFF', fontWeight: '600', fontSize: 16 }}>Resgatar benefício</Text>
+            </>
+          )}
         </TouchableOpacity>
       </View>
     </SafeAreaView>

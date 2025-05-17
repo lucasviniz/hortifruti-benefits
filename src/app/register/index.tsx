@@ -9,6 +9,7 @@ import SocialButton from '@/components/button/social-button';
 import DividerWithText from '@/components/divider';
 import { IconUser, IconMail, IconLock } from '@tabler/icons-react-native';
 import { useFeedbackScreen } from '@/hooks/feedback-screen';
+import { useAuth } from '@/contexts/auth-context'; // IMPORTANTE
 import styleRegister from './styles';
 
 type FormData = {
@@ -20,7 +21,14 @@ type FormData = {
 
 export default function RegisterScreen() {
   const { showSuccess, showError } = useFeedbackScreen();
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  const { register } = useAuth(); // IMPORTANTE
+  type FormData = {
+    name: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    termsAccepted: boolean;
+  };
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -33,26 +41,24 @@ export default function RegisterScreen() {
   const passwordValue = watch('password');
 
   const onSubmit = async (data: FormData) => {
-    if (!termsAccepted) {
-      return showError({
-        title: 'Termos obrigatórios',
-        message: 'Você precisa aceitar os termos para continuar.',
-        redirect: '/register',
-      });
-    }
-
     try {
       setIsLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      await register({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      });
+
       showSuccess({
         title: 'Cadastro concluído',
         message: 'Você pode agora fazer login na sua conta.',
         redirect: '/login',
       });
-    } catch (error) {
+    } catch (error: any) {
       showError({
         title: 'Erro ao cadastrar',
-        message: 'Tente novamente mais tarde.',
+        message: error.message || 'Tente novamente mais tarde.',
         redirect: '/register',
       });
     } finally {
@@ -140,28 +146,41 @@ export default function RegisterScreen() {
           />
         </View>
 
-        <View style={styleRegister.checkboxContainer}>
-          <TouchableOpacity
-            style={styleRegister.checkboxWrapper}
-            onPress={() => setTermsAccepted(!termsAccepted)}
-            activeOpacity={0.8}
-          >
-            <View style={[styleRegister.checkbox, termsAccepted && styleRegister.checkboxChecked]}>
-              {termsAccepted && <Text style={styleRegister.checkmark}>✓</Text>}
-            </View>
+        <Controller
+          control={control}
+          name="termsAccepted"
+          rules={{ required: 'Você precisa aceitar os termos para continuar.' }}
+          render={({ field: { value, onChange } }) => (
+            <>
+              <TouchableOpacity
+                style={styleRegister.checkboxWrapper}
+                onPress={() => onChange(!value)}
+                activeOpacity={0.8}
+              >
+                <View style={[styleRegister.checkbox, value && styleRegister.checkboxChecked]}>
+                  {value && <Text style={styleRegister.checkmark}>✓</Text>}
+                </View>
 
-            <Text style={styleRegister.termsText}>
-              I agree to the{' '}
-              <Text style={styleRegister.link} onPress={() => Linking.openURL('https://example.com/terms')}>
-                Terms of Service
-              </Text>{' '}
-              and{' '}
-              <Text style={styleRegister.link} onPress={() => Linking.openURL('https://example.com/privacy')}>
-                Privacy Policy
-              </Text>
-            </Text>
-          </TouchableOpacity>
-        </View>
+                <Text style={styleRegister.termsText}>
+                  I agree to the{' '}
+                  <Text style={styleRegister.link} onPress={() => Linking.openURL('https://example.com/terms')}>
+                    Terms of Service
+                  </Text>{' '}
+                  and{' '}
+                  <Text style={styleRegister.link} onPress={() => Linking.openURL('https://example.com/privacy')}>
+                    Privacy Policy
+                  </Text>
+                </Text>
+              </TouchableOpacity>
+
+              {errors.termsAccepted && (
+                <Text style={{ color: '#EF4444', fontSize: 12, marginTop: 4 }}>
+                  {errors.termsAccepted.message}
+                </Text>
+              )}
+            </>
+          )}
+        />
 
         <Button isLoading={isLoading} onPress={handleSubmit(onSubmit)}>
           <Button.Title>Create Account</Button.Title>

@@ -1,38 +1,24 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, Text, View } from 'react-native';
-import { IconBell, IconTag, IconAlertCircle } from '@tabler/icons-react-native';
-
-const notifications = [
-  {
-    id: '1',
-    title: 'Nova promoção!',
-    description: 'Ganhe 20% em pontos nas compras acima de R$50.',
-    icon: IconTag,
-    color: '#10B981',
-  },
-  {
-    id: '2',
-    title: 'Aviso de sistema',
-    description: 'Estaremos em manutenção no domingo das 2h às 4h.',
-    icon: IconAlertCircle,
-    color: '#F59E0B',
-  },
-  {
-    id: '3',
-    title: 'Benefício disponível!',
-    description: 'Você possui 2 cupons prontos para resgate.',
-    icon: IconBell,
-    color: '#3B82F6',
-  },
-];
+import { SafeAreaView, ScrollView, Text, View, TouchableOpacity } from 'react-native';
+import { useNotifications } from '@/contexts/notifications-context';
 
 export default function NotificationScreen() {
+  const { notifications, markAllAsRead } = useNotifications();
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
       <ScrollView contentContainerStyle={{ padding: 24 }}>
-        <Text style={{ fontSize: 22, fontWeight: '700', marginBottom: 16, color: '#1F2937' }}>
-          Notificações
-        </Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <Text style={{ fontSize: 22, fontWeight: '700', color: '#1F2937' }}>
+            Notificações
+          </Text>
+
+          <TouchableOpacity onPress={markAllAsRead}>
+            <Text style={{ color: '#10B981', fontSize: 14, fontWeight: '600' }}>
+              Marcar como lidas
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         {notifications.map((item) => (
           <View
@@ -45,6 +31,7 @@ export default function NotificationScreen() {
               flexDirection: 'row',
               gap: 16,
               alignItems: 'flex-start',
+              opacity: item.read ? 0.5 : 1
             }}
           >
             <View
