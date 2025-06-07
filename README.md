@@ -39,5 +39,5 @@ Sem necessidade de conexão com servidores ou back-end, todo o funcionamento do 
 
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/seu-usuario/hortifruti-mobile.git
-   cd hortifruti-mobile
+   git clone https://github.com/lucasviniz/hortifruti-benefits.git
+   cd hortifruti-benefits
