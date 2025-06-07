@@ -11,6 +11,11 @@ import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { colors } from "@/styles/theme";
 import { Loading } from "@/components/loading";
 import { PointsProvider } from "@/contexts/points-context";
+import { ErrorBoundary } from "@/components/error/error-boundary";
+import { AuthProvider } from "@/contexts/auth-context";
+import { BenefitsProvider } from "@/contexts/benefits-context";
+import { HistoryProvider } from "@/contexts/history-context";
+import { NotificationsProvider } from "@/contexts/notifications-context";
 
 
 export default function RootLayout() {
@@ -27,14 +32,24 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-          <PointsProvider>
-            <Stack
-                screenOptions={{
-                    headerShown: false,
-                    contentStyle: { backgroundColor: colors.gray[100] }
-                }}
-            />
-          </PointsProvider>
-        </GestureHandlerRootView>
+        <AuthProvider>
+          <BenefitsProvider>
+            <HistoryProvider>
+              <ErrorBoundary>
+                <NotificationsProvider>
+                    <PointsProvider>
+                      <Stack
+                          screenOptions={{
+                              headerShown: false,
+                              contentStyle: { backgroundColor: colors.gray[100] }
+                          }}
+                      />
+                    </PointsProvider>
+                </NotificationsProvider>
+              </ErrorBoundary>
+            </HistoryProvider>
+          </BenefitsProvider>
+        </AuthProvider>
+    </GestureHandlerRootView>
   )
 }

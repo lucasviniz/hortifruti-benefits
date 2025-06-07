@@ -7,12 +7,12 @@ export const s = StyleSheet.create({
         alignItems: "center"
     },
     logo: {
-        width: 240,
-        height: 240,
+        width: 200,
+        height: 200,
         marginTop: 10,
     },
     title: {
-        fontSize: 24,
+        fontSize: 18,
         fontFamily: fontFamily.bold,
         color: colors.gray[600]
     },
@@ -20,6 +20,6 @@ export const s = StyleSheet.create({
         fontSize: 16,
         fontFamily: fontFamily.regular,
         color: colors.gray[500],
-        marginTop: 12
+        marginTop: 10
     }
 })
